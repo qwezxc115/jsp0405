@@ -50,23 +50,30 @@
 					<th>가격</th>
 					<th>가능여부</th>
 					<th>소유자들</th>
+					<th>삭제</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach items="${applicationScope.cars }" var="car" varStatus="status">
+				
+					<c:url value="ex19carDelet.jsp" var="deletUrl">
+						<c:param name="id" value="${status.index }"></c:param>
+					</c:url>
+				
 					<tr>
 						<td>${status.count }</td>
-						<td>${car.model }</td>
+						<td><c:out value="${car.model }"/></td>
 						<td>${car.price }</td>
 						<td>${car.available }</td>
 						<td>
 							<c:forEach items="${car.owners }" var="owner" varStatus="status">
-								${owner }
+								<c:out value="${owner }"/>
 								<c:if test="${not status.last }">								
 								,
 								</c:if>
 							</c:forEach>
 						</td>
+						<td><a href="${deletUrl }"><i class="fa-solid fa-trash-can"></i></a></td>
 					</tr>
 				</c:forEach>
 			</tbody>
