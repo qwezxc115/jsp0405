@@ -12,33 +12,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>자동차들</h1>
-	
-	<!-- table.table>thead>tr>th*3^^tbody -->
-	<table class="table">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>모델</th>
-				<th>가격</th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach items="${cars }" var="car" varStatus="status">
-				<tr>
-					<td>
-					${status.count }
-					</td>
-					<td>
-					${car.model }
-					</td>
-					<td>
-					${car.price }
-					</td>
-				</tr>
-			</c:forEach>
-		
-		</tbody>
-	</table>
+	<h1>VIEW NAME 잘 사용함!!!!!!</h1>
 </body>
 </html>
