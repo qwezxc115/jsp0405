@@ -20,6 +20,7 @@
 <title>Insert title here</title>
 </head>
 <body>
+
 	<!-- .container>.row>.col -->
 	<div class="container">
 		<div class="row">
@@ -52,5 +53,6 @@
 			</div>
 		</div>
 	</div>
+	
 </body>
 </html>
