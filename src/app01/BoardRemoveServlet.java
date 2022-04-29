@@ -12,20 +12,18 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import app01.dao.BoardDao;
-import app01.dto.BoardDto;
 
 /**
- * Servlet implementation class BoardInsertServlet
+ * Servlet implementation class BoardRemoveServlet
  */
-@WebServlet("/board/insert")
-public class BoardInsertServlet extends HttpServlet {
+@WebServlet("/board/remove")
+public class BoardRemoveServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
     private DataSource ds;
-	
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public BoardInsertServlet() {
+    public BoardRemoveServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -40,48 +38,43 @@ public class BoardInsertServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		String path = "/WEB-INF/view/app01/insert.jsp";
-		request.getRequestDispatcher(path).forward(request, response);
+		// TODO Auto-generated method stub
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// request 파라미터 가공
-		String title = request.getParameter("title");
-		String body = request.getParameter("body");
-		BoardDto dto = new BoardDto();
-		dto.setTitle(title);
-		dto.setBody(body);
+	
+		// request 파라미터 수집, 가공
+		String idStr = request.getParameter("id");
+		int id = Integer.parseInt(idStr);
 		
-		// db에 입력
-		// DAO (Data Access Object)
-		try (Connection con = ds.getConnection();) {
-			BoardDao dao = new BoardDao();
-			boolean success = dao.insert(con, dto);
+		// 비지니스 로직 처리(db crud)
+		BoardDao dao = new BoardDao();
+		boolean success = false;
+		try (Connection con = ds.getConnection()) {
+			
+			success = dao.delete(con, id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		// 결과 set
+		
+		
+		
 		// forward/redirect
-		String path = request.getContextPath() + "/board/insert";
-		response.sendRedirect(path);
+		String location = request.getContextPath() + "/board/list";
+		if (success) {
+			location += "?success=true";
+		} else {
+			location += "?success=false";
+		}
+		
+		response.sendRedirect(location);
 		
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
