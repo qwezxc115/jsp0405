@@ -12,20 +12,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import app01.dao.ReplyDao;
-import app01.dto.ReplyDto;
 
 /**
- * Servlet implementation class ReplyModifyServlet
+ * Servlet implementation class ReplyRemoveServlet
  */
-@WebServlet("/reply/modify")
-public class ReplyModifyServlet extends HttpServlet {
+@WebServlet("/reply/delete")
+public class ReplyRemoveServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private DataSource ds;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public ReplyModifyServlet() {
+	public ReplyRemoveServlet() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
@@ -52,45 +51,37 @@ public class ReplyModifyServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
+		// request 파라미터 수집/ 가공
+		String idStr = request.getParameter("id");
+		int id = Integer.parseInt(idStr);
 		
-		// request 파라미터 수집 가공
-		String boardIdStr = request.getParameter("boardId"); //jsp에 추가 하세요.
-		String replyIdStr = request.getParameter("replyId");
-		String content = request.getParameter("replyContent"); // jsp와 매칭안됨, 적절히 수정하세요.
+		String boardId = request.getParameter("boardId");
 		
-		ReplyDto dto = new ReplyDto();
-		dto.setBoardId(Integer.parseInt(boardIdStr));
-		dto.setId(Integer.parseInt(replyIdStr));
-		dto.setContent(content);
-		
-		// bussiness logic 실행(Dao 일시키고)
+		// bussiness logic 처리
+		// sql:
+		// DELETE FROM Reply WHERE id = ?
 		ReplyDao dao = new ReplyDao();
 		
+		boolean success = false;
 		try (Connection con = ds.getConnection()) {
-			dao.update(con, dto);
+			success = dao.delete(con, id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		/*
-		 * 쿼리: 
-		 * 
-		 * UPDATE Reply
-		 * SET content = ?
-		 * WHERE id = ? 
-		 * 
-		 */
 		
-		// 결과 세팅
-		// 안해도됨..
+		// 결과세팅..(xxx)
 		
 		// forward / redirect
-		String location = request.getContextPath() + "/board/get" + "?" + "id=" + boardIdStr;
-		response.sendRedirect(location);
-		
+		String loc = request.getContextPath() + "/board/get?id=" + boardId;
+		response.sendRedirect(loc);
 		
 	}
 
 }
+
+
+
 
 
 
