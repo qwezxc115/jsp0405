@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="my" tagdir="/WEB-INF/tags/app01" %>
+<%@ taglib prefix="my" tagdir="/WEB-INF/tags/app01"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -26,17 +26,28 @@
 			$("#modify-submit1").removeClass("d-none");
 			$("#delete-submit1").removeClass("d-none");
 		});
-		
+
 		$("#delete-submit1").click(function(e) {
 			e.preventDefault();
-			
-			if (confirm("삭제하시겠습니까?")){
-			let form1 = $("#form1");
-			let actionAttr = "${appRoot}/board/remove";
-			form1.attr("action", actionAttr);
-			
-			form1.submit();
+
+			if (confirm("삭제하시겠습니까?")) {
+				let form1 = $("#form1");
+				let actionAttr = "${appRoot}/board/remove";
+				form1.attr("action", actionAttr);
+
+				form1.submit();
 			}
+		});
+		
+		// reply-edit-toggle 버튼 클릭시 댓글 보여주는 div 숨기고,
+		// 수정 form 보여주기
+		$(".reply-edit-toggle-button").click(function() {
+			const replyId = $(this).attr("data-reply-id");
+			const displayDivId = "#replyDisplayContainer" + replyId;
+			const editFormId = "#replyEditFormContainer" + replyId;
+			
+			$(displayDivId).hide();
+			$(editFormId).show();
 		});
 	});
 </script>
@@ -49,32 +60,29 @@
 	<div class="container">
 		<div class="row">
 			<div class="col">
-				<h1>글 본문 
+				<h1>
+					글 본문
 					<button id="edit-button1" class="btn btn-secondary">
 						<i class="fa-solid fa-pen-to-square"></i>
 					</button>
 				</h1>
-				
+
 				<c:if test="${not empty param.success }">
 					<c:if test="${param.success }">
-						<div class="alert alert-primary">
-							게시물이 수정되었습니다.
-						</div>
+						<div class="alert alert-primary">게시물이 수정되었습니다.</div>
 					</c:if>
 					<c:if test="${not param.success }">
-						<div class="alert alert-danger">
-							게시물 수정 중 문제가 발생하였습니다.
-						</div>
+						<div class="alert alert-danger">게시물 수정 중 문제가 발생하였습니다.</div>
 					</c:if>
 				</c:if>
-				
+
 				<form id="form1" action="${appRoot }/board/modify" method="post">
-					<input type="hidden" name="id" value="${board.id }"/>
-					
+					<input type="hidden" name="id" value="${board.id }" />
+
 					<div>
 						<label class="form-label" for="input1">제목</label>
 						<input class="form-control" type="text" name="title" required
-							id="input1" value="${board.title }" readonly/>
+							id="input1" value="${board.title }" readonly />
 					</div>
 
 					<div>
@@ -82,16 +90,72 @@
 						<textarea class="form-control" name="body" id="textarea1"
 							cols="30" rows="10" readonly>${board.body }</textarea>
 					</div>
-					
+
 					<div>
 						<label for="input2" class="form-label">작성일시</label>
-						<input class="form-control" type="datetime-local" value="${board.inserted }" readonly/>
-					</div> 
-					
+						<input class="form-control" type="datetime-local"
+							value="${board.inserted }" readonly />
+					</div>
+
 					<button id="modify-submit1" class="btn btn-primary d-none">수정</button>
 					<button id="delete-submit1" class="btn btn-danger d-none">삭제</button>
 				</form>
-					
+
+			</div>
+		</div>
+	</div>
+
+	<%-- 댓글 추가 form --%>
+	<!-- .container.mt-3>.row>.col>form -->
+	<div class="container mt-3">
+		<div class="row">
+			<div class="col">
+				<form action="${appRoot }/reply/insert" method="post">
+					<div class="input-group">
+						<input type="hidden" name="boardId" value="${board.id }" />
+						<input class="form-control" type="text" name="replyContent"
+							required />
+						<button class="btn btn-outline-secondary">
+							<i class="fa-solid fa-comment-dots"></i>
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<%-- 댓글 목록 --%>
+
+	<div class="container mt-3">
+		<div class="row">
+			<div class="col">
+				<ul class="list-group">
+					<c:forEach items="${replyList }" var="reply">
+						<li class="list-group-item">
+							<div id="replyDisplayContainer${reply.id }">
+								<div class="fw-bold">
+									<i class="fa-solid fa-comment"></i>${reply.prettyInserted}</div>
+								${reply.content }
+
+								<button class="replu-edit-toggle-button" id="replyEditToggleButton${reply.id }"
+									data-reply-id="${reply.id }">
+									<i class="fa-solid fa-pen-to-square"></i>
+								</button>
+							</div>
+
+							<div id="replyListEditFormContainer${reply.id }" style="display: none;">
+								<form action="${appRoot }/reply/modify" method="post">
+									<div class="input-group">
+										<input type="hidden" name="replyId" value="${reply.id }" />
+										<input class="form-control" value="${reply.content }type="text" name="replyContent"required />
+										<button class="btn btn-outline-secondary"><i class="fa-solid fa-comment-dots"></i></button>
+									</div>
+								</form>
+							</div>
+
+						</li>
+					</c:forEach>
+				</ul>
 			</div>
 		</div>
 	</div>
