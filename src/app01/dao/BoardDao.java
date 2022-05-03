@@ -21,7 +21,7 @@ public class BoardDao {
 		int result = 0;
 		// connection
 		// statment
-		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+		try (PreparedStatement pstmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setString(1, dto.getTitle());
 			pstmt.setString(2, dto.getBody());
 			// LocalDate 날짜
@@ -31,6 +31,15 @@ public class BoardDao {
 			
 			// execute query
 			result = pstmt.executeUpdate();
+			
+			// 자동 생성된 키 얻기
+			try (ResultSet rs = pstmt.getGeneratedKeys();) {
+				if (rs.next()) {
+//					System.out.println(rs.getInt(1));
+					dto.setId(rs.getInt(1));
+				}
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,7 +105,7 @@ public class BoardDao {
 				+ "SET title=?, "
 				+ "    body=? "
 				+ "WHERE id=? ";
-				
+		
 		try (PreparedStatement pstmt = con.prepareStatement(sql)) {
 			pstmt.setString(1, board.getTitle());
 			pstmt.setString(2, board.getBody());
@@ -124,6 +133,7 @@ public class BoardDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		return false;
 	}
 }
